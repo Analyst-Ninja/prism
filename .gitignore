@@ -218,3 +218,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local data (Iceberg warehouse etc.)
+data/
+node_modules/
+.next/
+.terraform/
+*.tfstate*
