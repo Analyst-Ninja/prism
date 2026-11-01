@@ -27,3 +27,21 @@ Postgres > Iceberg Silver > Redis (fast copy).
 
 ## Storage backends
 `STORAGE_BACKEND=local` -> filesystem warehouse + sqlite catalog. `s3` -> S3 warehouse + Glue. See `src/prism/config.py`.
+
+## Customer 360 document (Redis `customer:{customer_id}`, JSON)
+Contract between the Flink job (writer) and the admin API (reader). Money as strings, timestamps ISO-8601 UTC.
+```
+profile {customer_id, first_name, last_name, email, phone, status, kyc_status, created_at}   # raw; admin masks email/phone on output
+accounts [{account_number, type, status, balance, opened_at}]
+totals {total_balance, account_count, active_count, frozen_count, closed_count}
+activity {txn_count, last_txn_at, total_deposits, total_withdrawals, total_transfers_out, total_transfers_in}
+recent_transactions [last 10, newest first]
+flags {kyc_pending, has_frozen_account, has_no_accounts, dormant}      # dormant = no txn in 30 days
+meta {last_updated_at, source_lsn, version}                             # source_lsn guards against stale overwrites
+```
+Reference generator: `app/backend/admin_api/stores/sample_data.py`.
+
+## Admin API read paths
+- 360 routes: Redis; if Redis errors -> lakehouse snapshot, response flagged `source: "iceberg"`, `degraded: true`; unknown customer -> 404; both down -> 503.
+- Search (email/name) and Explore: lakehouse only (Redis has no secondary index).
+- `/ops/*`: read-only checks (Redis key count vs lakehouse customer count; per-customer balance spot-check). No write/rebuild endpoint: rebuild is `utils/rebuild_redis.py`.
