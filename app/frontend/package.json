@@ -1,0 +1,12 @@
+{
+  "name": "prism-frontend",
+  "private": true,
+  "packageManager": "pnpm@12.15.0",
+  "scripts": {
+    "dev:customer": "pnpm --filter @prism/customer dev",
+    "dev:admin": "pnpm --filter @prism/admin dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint"
+  }
+}

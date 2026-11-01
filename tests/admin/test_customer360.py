@@ -67,3 +67,12 @@ def test_redis_down_falls_back_to_lakehouse(dead_redis_client, dataset):
 
 def test_redis_down_unknown_customer_404(dead_redis_client):
     assert dead_redis_client.get("/customers/999999999/360").status_code == 404
+
+
+def test_cors_allows_frontend_origin(client):
+    r = client.options(
+        "/customers/100000000/360",
+        headers={"Origin": "http://localhost:3001", "Access-Control-Request-Method": "GET"},
+    )
+    assert r.status_code == 200
+    assert r.headers["access-control-allow-origin"] == "http://localhost:3001"

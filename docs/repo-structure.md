@@ -3,10 +3,10 @@
 ```
 prism/
 ├── app/
-│   ├── frontend/            pnpm workspace, Next.js + shadcn/ui + Tailwind
-│   │   ├── customer/        customer UI
-│   │   ├── admin/           360 page (Redis) + Explore page (Iceberg)
-│   │   └── shared/          api client, ui components, types
+│   ├── frontend/            pnpm workspace, Next.js + shadcn/ui + Tailwind v4 + GSAP
+│   │   ├── customer/        customer UI (:3000)
+│   │   ├── admin/           Customer 360, Explore, Ops (:3001)
+│   │   └── shared/          @prism/ui: shadcn components, theme tokens, api client, types
 │   └── backend/             FastAPI
 │       ├── customer_api/    writes Postgres only; owns db.py, models, services, routers
 │       │                    (db lives here, not in common/, to keep ADR 0002 boundary)

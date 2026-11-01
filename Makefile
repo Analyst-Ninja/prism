@@ -35,3 +35,19 @@ admin-api:
 
 seed-redis:
 	uv run python utils/seed_redis_360.py --flush
+
+.PHONY: web-install web-customer web-admin web-build web-lint
+web-install:
+	cd app/frontend && pnpm install
+
+web-customer:
+	cd app/frontend && pnpm dev:customer
+
+web-admin:
+	cd app/frontend && pnpm dev:admin
+
+web-build:
+	cd app/frontend && pnpm build
+
+web-lint:
+	cd app/frontend && pnpm lint
