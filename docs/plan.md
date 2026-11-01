@@ -14,8 +14,9 @@ Constraints: target is AWS with S3 (no MinIO). Build local-first, deploy to AWS 
 
 ## Build order (status)
 - [x] 0. Repo scaffold + docs
-- [ ] 1. Postgres + tables (customers, accounts, transactions)
-- [ ] 2. Customer app (API + Next.js UI), read/write Postgres only
+- [x] 1. Postgres + tables (customers, accounts, transactions) - Alembic `0001_init`
+- [x] 2a. Customer API (FastAPI) done, Faker-tested
+- [ ] 2b. Customer UI (Next.js)
 - [ ] 3. Debezium + Kafka, verify event per topic, ordered by key
 - [ ] 4. Flink + Iceberg: Bronze then Silver
 - [ ] 5. Flink + Redis: 360 state + idempotent sink

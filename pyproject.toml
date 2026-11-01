@@ -8,7 +8,12 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
+    "alembic>=1.20.1",
     "faker>=40.44.0",
+    "fastapi[standard]>=0.162.0",
+    "psycopg[binary]>=3.3.6",
+    "pydantic-settings>=2.16.2",
+    "sqlalchemy>=2",
 ]
 
 [project.scripts]
@@ -17,3 +22,16 @@ prism = "prism:main"
 [build-system]
 requires = ["uv_build>=0.12.13,<0.13.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.2.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["app/backend", "."]
+testpaths = ["tests"]
+
+[tool.ruff]
+src = ["app/backend", "src", "."]

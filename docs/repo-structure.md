@@ -8,9 +8,10 @@ prism/
 │   │   ├── admin/           360 page (Redis) + Explore page (Iceberg)
 │   │   └── shared/          api client, ui components, types
 │   └── backend/             FastAPI
-│       ├── customer_api/    writes Postgres only
+│       ├── customer_api/    writes Postgres only; owns db.py, models, services, routers
+│       │                    (db lives here, not in common/, to keep ADR 0002 boundary)
 │       ├── admin_api/       reads Redis + Iceberg, never Postgres
-│       └── common/          settings, schemas
+│       └── common/          settings only (no DB code)
 ├── docker/                  LOCAL runtime (compose + per-service config)
 ├── infra/terraform/         AWS runtime (stub)
 ├── config/                  local.env.example, aws.env.example
@@ -19,7 +20,8 @@ prism/
 │   ├── pipeline/            bronze, silver, customer360 (Flink jobs)
 │   ├── serving/             redis_store, iceberg_reader
 │   └── models/              table/event schemas
-├── utils/                   seed_demo, rebuild_redis, verify_rebuild, scripts/
+├── alembic/ alembic.ini     migrations (schema source of truth)
+├── utils/                   seed_demo (Faker, via service layer), rebuild_redis, verify_rebuild, scripts/
 ├── tests/                   unit, integration, e2e
 ├── docs/                    this folder
 ├── CLAUDE.md                doc-maintenance rule
@@ -28,4 +30,3 @@ prism/
 
 Local data lands in `data/` (gitignored), including the Iceberg warehouse.
 
-Note: `src/prism/generate.py` (Faker seed generator) was present at session start but missing when scaffolding began. Restore it from your own copy if needed.

@@ -17,3 +17,14 @@ rebuild-redis:
 
 verify-rebuild:
 	uv run python utils/verify_rebuild.py
+
+.PHONY: api migrate test
+
+api:
+	uv run fastapi dev app/backend/customer_api/main.py
+
+migrate:
+	uv run alembic upgrade head
+
+test:
+	uv run pytest
