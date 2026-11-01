@@ -225,3 +225,8 @@ node_modules/
 .next/
 .terraform/
 *.tfstate*
+
+# Frontend
+.env*.local
+*.tsbuildinfo
+next-env.d.ts

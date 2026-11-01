@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     postgres_dsn: str = "postgresql://prism:prism@localhost:5432/bank"
+    cors_origins: str = "http://localhost:3000,http://localhost:3001"  # comma-separated
 
     @property
     def sqlalchemy_url(self) -> str:

@@ -34,3 +34,16 @@ Explore/search read the fake in-memory lakehouse (`LAKEHOUSE_BACKEND=fake`) buil
 Endpoints: `GET /customers/{customer_id}/360|accounts|transactions|freshness`, `GET /customers/search?email=|last_name=|q=`, `GET /explore/transactions`, `GET /explore/summary?group_by=account_type|txn_type|month|status` (filters: `date_from date_to account_type txn_type status`), `GET /ops/status`, `GET /ops/consistency/{customer_id}`, `GET /health`.
 Email/phone are masked in every response. Stop Redis and the 360 routes keep working from the lakehouse with `source: "iceberg"`, `degraded: true`.
 Tests: `make test` (admin tests use Redis db 15 and skip if Redis is down; customer tests need Postgres).
+
+## Frontend (Next.js) - ports 3000 / 3001
+Prereqs: Node 22+, pnpm. Four processes in separate terminals (Postgres and Redis up, `make migrate`, `make seed-redis` done):
+```bash
+make api            # customer API  :8000
+make admin-api      # admin API     :8001
+make web-install    # once
+make web-customer   # customer UI   http://localhost:3000
+make web-admin      # admin UI      http://localhost:3001
+```
+Checks: `cd app/frontend && pnpm typecheck && pnpm lint && pnpm build`.
+Customer sign-in is demo-only (customer ID kept in localStorage). Admin shows seeded demo customers (`100000000`..`100000019`) until the CDC pipeline exists; customers registered in the customer app do not appear there yet.
+Try live sync: open an admin 360 page, edit that customer's JSON in Redis (bump `meta.source_lsn` and a balance); the page updates within ~3s.

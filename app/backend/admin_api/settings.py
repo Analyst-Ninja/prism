@@ -9,6 +9,7 @@ class AdminSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     redis_url: str = "redis://localhost:6379/0"
+    cors_origins: str = "http://localhost:3000,http://localhost:3001"  # comma-separated
     redis_timeout_seconds: float = 1.0
     lakehouse_backend: Literal["fake", "iceberg"] = "fake"
     # Fake data parameters. The Redis seeder and the fake lakehouse must use the same values.

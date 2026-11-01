@@ -52,3 +52,12 @@ def test_malformed_ids_422(client):
     assert client.get("/customers/abc").status_code == 422
     assert client.get("/customers/12345678").status_code == 422  # 8 digits
     assert client.get("/accounts/123456789").status_code == 422  # 9 digits, not 15
+
+
+def test_cors_allows_frontend_origin(client):
+    r = client.options(
+        "/customers",
+        headers={"Origin": "http://localhost:3000", "Access-Control-Request-Method": "POST"},
+    )
+    assert r.status_code == 200
+    assert r.headers["access-control-allow-origin"] == "http://localhost:3000"

@@ -1,0 +1,6 @@
+packages:
+  - shared
+  - customer
+  - admin
+allowBuilds:
+  unrs-resolver: true
