@@ -21,3 +21,16 @@ uv run python utils/seed_demo.py -n 20 --seed 42   # Faker demo data via service
 make test                                 # pytest; auto-creates + migrates `bank_test` DB, truncates per test
 ```
 Endpoints: `POST /customers`, `PATCH /customers/{customer_id}` (`kyc_status: "active"`), `POST /customers/{customer_id}/close`, `GET /customers/{customer_id}/accounts`, `POST /accounts` (`customer_id`, `type`), `POST /accounts/{account_number}/{freeze|unfreeze|close|deposit|withdraw}`, `POST /transfers` (`from_account_number`, `to_account_number`, `amount`), `GET /accounts/{account_number}/transactions`. `customer_id` = 9 digits, `account_number` = 15 digits (else 422). Rule violations -> 409, unknown ids -> 404.
+
+## Admin API (FastAPI) - port 8001
+Needs Redis only (never Postgres). Until the Flink job exists, a dev seeder stands in for it:
+```bash
+docker compose -f docker/docker-compose.yml up -d redis
+make seed-redis        # writes 20 Faker customer-360 docs to Redis (FAKE_CUSTOMERS / FAKE_SEED env to change)
+make admin-api         # http://127.0.0.1:8001/docs
+```
+Explore/search read the fake in-memory lakehouse (`LAKEHOUSE_BACKEND=fake`) built from the same Faker data, so Redis and "Iceberg" agree. Customer ids in the seed: `100000000`..`100000019`.
+
+Endpoints: `GET /customers/{customer_id}/360|accounts|transactions|freshness`, `GET /customers/search?email=|last_name=|q=`, `GET /explore/transactions`, `GET /explore/summary?group_by=account_type|txn_type|month|status` (filters: `date_from date_to account_type txn_type status`), `GET /ops/status`, `GET /ops/consistency/{customer_id}`, `GET /health`.
+Email/phone are masked in every response. Stop Redis and the 360 routes keep working from the lakehouse with `source: "iceberg"`, `degraded: true`.
+Tests: `make test` (admin tests use Redis db 15 and skip if Redis is down; customer tests need Postgres).

@@ -10,7 +10,9 @@ prism/
 │   └── backend/             FastAPI
 │       ├── customer_api/    writes Postgres only; owns db.py, models, services, routers
 │       │                    (db lives here, not in common/, to keep ADR 0002 boundary)
-│       ├── admin_api/       reads Redis + Iceberg, never Postgres
+│       ├── admin_api/       reads Redis + Iceberg, never Postgres (own settings.py, no DB code)
+│       │   ├── routers/ services/ schemas.py masking.py deps.py
+│       │   └── stores/      redis_store, lakehouse (Protocol), fake_lakehouse, sample_data (Faker 360 builder)
 │       └── common/          settings only (no DB code)
 ├── docker/                  LOCAL runtime (compose + per-service config)
 ├── infra/terraform/         AWS runtime (stub)
@@ -21,8 +23,8 @@ prism/
 │   ├── serving/             redis_store, iceberg_reader
 │   └── models/              table/event schemas
 ├── alembic/ alembic.ini     migrations (schema source of truth)
-├── utils/                   seed_demo (Faker, via service layer), rebuild_redis, verify_rebuild, scripts/
-├── tests/                   unit, integration, e2e
+├── utils/                   seed_demo (Faker, via service layer), seed_redis_360 (DEV stand-in for Flink), rebuild_redis, verify_rebuild, scripts/
+├── tests/                   integration (customer API + Postgres), admin (admin API + Redis db 15), unit, e2e
 ├── docs/                    this folder
 ├── CLAUDE.md                doc-maintenance rule
 ├── Makefile  pyproject.toml  README.md

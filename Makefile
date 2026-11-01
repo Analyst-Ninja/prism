@@ -28,3 +28,10 @@ migrate:
 
 test:
 	uv run pytest
+
+.PHONY: admin-api seed-redis
+admin-api:
+	uv run fastapi dev app/backend/admin_api/main.py --port 8001
+
+seed-redis:
+	uv run python utils/seed_redis_360.py --flush

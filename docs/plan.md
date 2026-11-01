@@ -20,7 +20,9 @@ Constraints: target is AWS with S3 (no MinIO). Build local-first, deploy to AWS 
 - [ ] 3. Debezium + Kafka, verify event per topic, ordered by key
 - [ ] 4. Flink + Iceberg: Bronze then Silver
 - [ ] 5. Flink + Redis: 360 state + idempotent sink
-- [ ] 6. Admin app: 360 (Redis), Explore (Iceberg), fallback, rebuild script
+- [x] 6a. Admin API (FastAPI) on Redis + fake lakehouse: 360, search, explore, ops, Redis-down fallback. Faker-tested
+- [ ] 6b. Admin API: real PyIceberg `LakehouseReader` (after step 4)
+- [ ] 6c. Admin UI (Next.js) + `utils/rebuild_redis.py`
 - [ ] 7. End-to-end test incl. Redis stop / fallback / rebuild
 - [ ] 8. AWS deploy (terraform: S3, RDS, MSK, Managed Flink, ElastiCache, ECS, IAM, Glue)
 
