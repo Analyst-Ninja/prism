@@ -1,0 +1,57 @@
+# LOCAL stack. Iceberg warehouse = ./data/warehouse (no MinIO, no S3 locally).
+# Skeleton: images/versions are placeholders to confirm when each build step starts.
+name: prism
+
+services:
+  postgres:
+    image: postgres:16
+    command: ["postgres", "-c", "wal_level=logical"]
+    environment:
+      POSTGRES_USER: prism
+      POSTGRES_PASSWORD: prism
+      POSTGRES_DB: bank
+    ports: ["5432:5432"]
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./postgres:/docker-entrypoint-initdb.d:ro
+
+  kafka:
+    image: apache/kafka:3.8.0
+    ports: ["9092:9092"]
+
+  debezium:
+    image: quay.io/debezium/connect:2.7
+    depends_on: [kafka, postgres]
+    ports: ["8083:8083"]
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: prism-connect
+      CONFIG_STORAGE_TOPIC: _connect_configs
+      OFFSET_STORAGE_TOPIC: _connect_offsets
+      STATUS_STORAGE_TOPIC: _connect_status
+
+  flink-jobmanager:
+    image: flink:1.19
+    command: jobmanager
+    ports: ["8081:8081"]
+    volumes:
+      - ../data/warehouse:/data/warehouse
+
+  flink-taskmanager:
+    image: flink:1.19
+    command: taskmanager
+    depends_on: [flink-jobmanager]
+    volumes:
+      - ../data/warehouse:/data/warehouse
+
+  redis:
+    image: redis:7
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    ports: ["6379:6379"]
+    volumes:
+      - redis_data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+
+volumes:
+  pg_data:
+  redis_data:
