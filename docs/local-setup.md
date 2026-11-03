@@ -12,6 +12,18 @@ Status: compose file is a skeleton. Image versions, Kafka listeners, Flink conne
 
 Iceberg warehouse is `./data/warehouse` (gitignored), mounted at `/data/warehouse` in Flink containers.
 
+## One command (everything, in dependency order)
+```bash
+make dev   # postgres+redis (wait healthy) -> migrate -> seed-redis -> customer API :8000, admin API :8001, customer UI :3000, admin UI :3001
+```
+Ctrl-C stops the four app servers; `make down` stops containers. Run `make web-install` once first.
+
+## Test everything
+```bash
+make test-all   # postgres+redis up -> migrate -> ruff -> pytest (customer + admin) -> frontend typecheck, lint, build
+```
+No browser/e2e tests yet; frontend is verified by typecheck + lint + production build.
+
 ## Customer API (FastAPI)
 ```bash
 docker compose -f docker/docker-compose.yml up -d postgres

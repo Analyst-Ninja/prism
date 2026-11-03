@@ -51,3 +51,21 @@ web-build:
 
 web-lint:
 	cd app/frontend && pnpm lint
+
+.PHONY: dev dev-prep
+dev-prep:
+	mkdir -p data/warehouse
+	$(COMPOSE) up -d --wait postgres redis
+	$(MAKE) migrate seed-redis
+
+dev: dev-prep
+	$(MAKE) -j4 api admin-api web-customer web-admin
+
+.PHONY: test-all
+test-all:
+	mkdir -p data/warehouse
+	$(COMPOSE) up -d --wait postgres redis
+	$(MAKE) migrate
+	uvx ruff check .
+	uv run pytest
+	cd app/frontend && pnpm typecheck && pnpm lint && pnpm build
